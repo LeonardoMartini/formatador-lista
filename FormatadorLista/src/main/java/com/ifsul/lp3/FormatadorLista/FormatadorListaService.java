@@ -2,62 +2,67 @@ package com.ifsul.lp3.FormatadorLista;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
 
 @Service
 public class FormatadorListaService {
 
-    public List<String> removerPalavrasRepetidas(List<String> listaPalavras) {
-        return listaPalavras.stream().distinct().collect(Collectors.toList());
+    public List<String> removerPalavrasRepetidas(List<String> palavras) {
+        palavras = formatarLista(palavras);
+        return palavras.stream().distinct().collect(Collectors.toList());
     }
 
-    public List<String> ordenarCrescente(List<String> listaPalavras) {
-        return listaPalavras.stream().sorted().collect(Collectors.toList());
+    public List<String> ordenarCrescente(List<String> palavras) {
+        palavras = formatarLista(palavras);
+        return palavras.stream().sorted().collect(Collectors.toList());
     }
 
-    public List<String> ordenarDecrescente(List<String> listaPalavras) {
-        List<String> listaPalavrasInvertida = listaPalavras.stream().sorted().collect(Collectors.toList());
-        Collections.reverse(listaPalavrasInvertida);
-        return listaPalavrasInvertida;
+    public List<String> ordenarDecrescente(List<String> palavras) {
+        palavras = formatarLista(palavras);
+        List<String> palavrasInvertidas = palavras.stream().sorted().collect(Collectors.toList());
+        Collections.reverse(palavrasInvertidas);
+        return palavrasInvertidas;
     }
 
-    public Integer contarPalavrasRepetidas(List<String> listaPalavras) {
-        return 1;
+    public Integer contarPalavrasRepetidas(List<String> palavras) {
+        palavras = formatarLista(palavras);
+        Map<String, Long> palavrasAgrupadas = palavras.stream()
+                .collect(Collectors.groupingBy(palavra -> palavra, Collectors.counting()));
+        return Math.toIntExact(palavrasAgrupadas.values().stream()
+                .filter(palavra -> palavra > 1)
+                .reduce(Long.valueOf(0), Long::sum));
     }
 
-    public List<String> todasMaiusculas(List<String> listaPalavras) {
-        return listaPalavras.stream().map(palavra -> palavra.toUpperCase()).collect(Collectors.toList());
+    public List<String> converterTodasMaiusculas(List<String> palavras) {
+        palavras = formatarLista(palavras);
+        return palavras.stream().map(palavra -> palavra.toUpperCase()).collect(Collectors.toList());
     }
 
-    public List<String> todasMinusculas(List<String> listaPalavras) {
-        return listaPalavras.stream().map(palavra -> palavra.toLowerCase()).collect(Collectors.toList());
+    public List<String> converterTodasMinusculas(List<String> palavras) {
+        palavras = formatarLista(palavras);
+        return palavras.stream().map(palavra -> palavra.toLowerCase()).collect(Collectors.toList());
     }
 
-    public List<String> inverterLista(List<String> listaPalavras) {
-        Collections.reverse(listaPalavras);
-        return listaPalavras;
+    public List<String> inverterLista(List<String> palavras) {
+        palavras = formatarLista(palavras);
+        Collections.reverse(palavras);
+        return palavras;
     }
 
-    public List<String> inicialMaiuscula(List<String> listaPalavras) {
-        listaPalavras.stream().map(palavra -> palavra.toLowerCase()).collect(Collectors.toList());
-        List<String> listaPalavrasComInicialMaiuscula = new ArrayList<>();
-        for (int i = 0; i < listaPalavras.size(); i++) {
-            char[] palavra = listaPalavras.get(i).toCharArray();
-            Character primeiraLetra = palavra[0];
-            String letraMaiuscula = primeiraLetra.toString().toUpperCase();
-            palavra[0] = letraMaiuscula.charAt(0);
-            String palavraComInicialMaiuscula = "";
-            for (int c = 0; c < palavra.length; c++) {
-                palavraComInicialMaiuscula+=palavra[c];
-            }
-            listaPalavrasComInicialMaiuscula.add(palavraComInicialMaiuscula);
-        }
-        return listaPalavrasComInicialMaiuscula;
+    public List<String> converterInicialMaiuscula(List<String> palavras) {
+        palavras = formatarLista(palavras);
+        return palavras.stream().map(palavra -> {
+            char[] letras = palavra.toCharArray();
+            letras[0] = Character.toUpperCase(letras[0]);
+            return new String(letras);
+        }).collect(Collectors.toList());
+    }
+
+    private List<String> formatarLista(List<String> palavras) {
+        return palavras.stream().map(palavra -> palavra.trim()).collect(Collectors.toList());
     }
 
 }
